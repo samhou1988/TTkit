@@ -1,0 +1,6 @@
+// text wrap Mixins
+
+@mixin text-wrap() {
+  word-wrap: break-word;
+  word-break: break-all;
+}

@@ -1,0 +1,22 @@
+//
+// Floats
+//
+
+.clearfix {
+  @include clearfix();
+}
+
+
+//
+// Text
+//
+
+// Alignment
+
+.text-nowrap {
+  white-space: nowrap;
+}
+
+.text-truncate {
+  @include text-truncate();
+}

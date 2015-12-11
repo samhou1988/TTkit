@@ -1,0 +1,27 @@
+{
+  "boss": true,
+  "camelcase": true,
+  "curly": true,
+  "eqeqeq": true,
+  "eqnull": true,
+  "expr": true,
+  "immed": true,
+  "noarg": true,
+  "quotmark": "double",
+  "undef": true,
+  "unused": true,
+  "es3": false,
+  "maxlen": 120,
+  "indent": 2,
+
+  "browser": true,
+  "node": true,
+
+  "globals": {
+    "window": true,
+    "JSON": false,
+    "define": true,
+    "module": true,
+    "noGlobal": true
+  }
+}

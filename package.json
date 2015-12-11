@@ -1,0 +1,53 @@
+{
+  "name": "ukiyoe",
+  "version": "1.0.0",
+  "description": "\"Earth era 2015 Ukiyoe\" is one of this year's year-end news planning, mobile terminal H5. 2015 by NASA found \"another planet\", so this is inspired by \"another perspective\" to re-examine in 2015 occurred in China news events and social phenomena to be presented in a ukiyoe picture.",
+  "main": "index.js",
+  "scripts": {
+    "test": "gulp test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://git.code.oa.com/samhou/ukiyoe.git"
+  },
+  "keywords": [
+    "News",
+    "Ukiyoe"
+  ],
+  "homepage": "http://news.qq.com/",
+  "author": "samhou <samhou@tencent.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "del": "^0.1.3",
+    "glob": "^4.0.6",
+    "gulp": "^3.8.10",
+    "gulp-autoprefixer": "^3.1.0",
+    "gulp-bytediff": "^0.2.0",
+    "gulp-cached": "^1.1.0",
+    "gulp-header": "^1.7.1",
+    "gulp-jscs": "^1.3.0",
+    "gulp-jshint": "^1.9.0",
+    "gulp-load-plugins": "^0.7.1",
+    "gulp-load-utils": "0.0.4",
+    "gulp-minify-css": "^0.3.11",
+    "gulp-rename": "^1.2.0",
+    "gulp-ruby-sass": "^2.0.6",
+    "gulp-scss-lint": "^0.3.8",
+    "gulp-sourcemaps": "^1.2.8",
+    "gulp-task-listing": "^0.3.0",
+    "gulp-uglify": "^1.0.1",
+    "gulp-util": "^3.0.1",
+    "jasmine-core": "^2.4.1",
+    "jquery": "^2.1.1",
+    "jshint-stylish": "^1.0.0",
+    "karma": "^0.12.25",
+    "karma-chrome-launcher": "^0.2.2",
+    "karma-coverage": "^0.2.6",
+    "karma-jasmine": "^0.3.6",
+    "karma-phantomjs-launcher": "^0.1.4",
+    "merge-stream": "^0.1.6",
+    "phantomjs": "^1.9.7-15",
+    "plato": "^1.2.2",
+    "qunitjs": "~1.14.0"
+  }
+}
