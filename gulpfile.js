@@ -8,6 +8,7 @@ var merge = require('merge-stream');
 var plato = require('plato');
 var argv = require('yargs').argv;
 var exec = require('child_process').exec;
+var browserSync = require('browser-sync');
 var plug = require('gulp-load-plugins')();
 
 var paths = {
@@ -88,12 +89,35 @@ gulp.task('css', ['scss-lint'], function() {
       pkg: pkg
     }))
     .pipe(gulp.dest('./src/css'))
+    .pipe(plug.livereload())
     .pipe(plug.bytediff.start())
     .pipe(plug.minifyCss({}))
     .pipe(plug.bytediff.stop(bytediffFormatter))
     .pipe(plug.rename(pkg.name + '-' + pkg.version + '.min.css'))
     .pipe(gulp.dest(paths.build));
 });
+
+/**
+ * use Postcss plugin
+ */
+gulp.task('styles', function () {
+  return gulp.src('./src/css/main.css')
+    .pipe(plug.postcss([]))
+    .pipe(gulp.dest('./build/css'));
+});
+
+/**
+ * start a server
+ */
+gulp.task('browser-sync', function () {
+  var files = ['./src/**/*.*'];
+
+  browserSync.init(files, {
+    server: {
+      baseDir: './src'
+    }
+  })
+})
 
 /**
  * Validate .scss files with scss-lint
