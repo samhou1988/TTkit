@@ -98,6 +98,19 @@ gulp.task('css', ['scss-lint'], function() {
 });
 
 /**
+ * creating image sprites and the corresponding stylesheets
+ */
+gulp.task('sprites', function () {
+  gulp.src('./src/img/icon/*.png')
+    .pipe(plug.sprite('sprites.png', {
+      imagePath: './build/img',
+      cssPath: './src/sass/',
+      preprocessor: 'scss'
+    }))
+    .pipe(gulp.dest('./build/img'));
+});
+
+/**
  * use Postcss plugin
  */
 gulp.task('styles', function () {
