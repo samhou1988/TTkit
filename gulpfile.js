@@ -9,6 +9,7 @@ var plato = require('plato');
 var argv = require('yargs').argv;
 var exec = require('child_process').exec;
 var browserSync = require('browser-sync');
+var sprity = require('sprity');
 var plug = require('gulp-load-plugins')();
 
 var paths = {
@@ -101,13 +102,12 @@ gulp.task('css', ['scss-lint'], function() {
  * creating image sprites and the corresponding stylesheets
  */
 gulp.task('sprites', function () {
-  gulp.src('./src/img/icon/*.png')
-    .pipe(plug.sprite('sprites.png', {
-      imagePath: './build/img',
-      cssPath: './src/sass/',
-      preprocessor: 'scss'
-    }))
-    .pipe(gulp.dest('./build/img'));
+  return sprity.src({
+    src: './src/img/icon/*.png',
+    style: './src/sass/_sprite.scss',
+    processor: 'sass'
+  })
+  .pipe(gulp.dest('./build/img'));
 });
 
 /**
