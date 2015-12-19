@@ -1,14 +1,10 @@
 {
-  "name": "ttkit",
-  "version": "1.0.1",
+  "name": "TTkit",
+  "version": "1.0.0",
   "description": "CI Task Tools",
   "main": "index.js",
   "scripts": {
     "test": "gulp test"
-  },
-  "preferGlobal": "true",
-  "bin": {
-    "TTkit": "./bin/index.js"
   },
   "repository": {
     "type": "git",
@@ -59,12 +55,6 @@
     "plato": "^1.2.2",
     "qunitjs": "~1.14.0",
     "sprity": "^1.0.8",
-    "sprity-sass": "^1.0.4",
-    "yargs": "^3.31.0"
-  },
-  "dependencies": {
-    "bluebird": "^3.1.1",
-    "commander": "^2.9.0",
-    "fs-extra": "^0.26.3"
+    "sprity-sass": "^1.0.4"
   }
 }
