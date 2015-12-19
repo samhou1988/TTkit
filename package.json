@@ -1,12 +1,12 @@
 {
   "name": "ttkit",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "CI Task Tools",
   "main": "index.js",
   "scripts": {
     "test": "gulp test"
   },
-  "preferGlobal": "true",
+  "preferGlobal": true,
   "bin": {
     "TTkit": "./bin/index.js"
   },
@@ -19,6 +19,9 @@
     "Task Tools"
   ],
   "homepage": "http://samhou1988.github.io/",
+  "bugs": {
+    "url": "https://github.com/samhou1988/TTkit/issues"
+  },
   "author": "samhou1988 <samhou1988@gmail.com>",
   "license": "ISC",
   "devDependencies": {
