@@ -10,17 +10,18 @@ var argv = require('yargs').argv;
 var exec = require('child_process').exec;
 var browserSync = require('browser-sync');
 var sprity = require('sprity');
-var plug = require('gulp-load-plugins')();
+var $ = require('gulp-load-plugins')();
 
 var paths = {
   js: './src/js/**/*.js',
   sass: './src/sass/**/*.scss',
   report: './report',
-  build: './build'
+  build: './build',
+  tmp: './.tmp'
 };
 
-var colors = plug.util.colors;
-var log = plug.util.log;
+var colors = $.util.colors;
+var log = $.util.log;
 
 var pkg = require('./package.json');
 pkg.date = formatCurrentDate();
@@ -38,7 +39,7 @@ var banner = ['/**',
 /**
  * List the available gulp tasks
  */
-gulp.task('help', plug.taskListing);
+gulp.task('help', $.taskListing);
 
 /**
  * Lint the code, create coverage report, and a visualizer
@@ -56,81 +57,25 @@ gulp.task('analyze', function() {
 });
 
 /**
- * Minify and bundle the app's JavaScript
- * @return {Stream}
- */
-gulp.task('js', function() {
-  log('Bundling, minifying, and copying the app\'s JavaScript');
-
-  return gulp.src(paths.js)
-    .pipe(plug.sourcemaps.init())
-    .pipe(plug.bytediff.start())
-    .pipe(plug.uglify({}))
-    .pipe(plug.bytediff.stop(bytediffFormatter))
-    .pipe(plug.sourcemaps.write('.'))
-    .pipe(plug.rename(function(file) {
-      if (file.extname === '.js') {
-        file.basename += '.min';
-      }
-    }))
-    .pipe(gulp.dest(paths.build));
-});
-
-/**
  * Minify and bundle the CSS
  * @return {Stream}
  */
 gulp.task('css', ['scss-lint'], function() {
   log('Bundling, minifying, and copying the app\'s CSS');
 
-  return plug.rubySass(paths.sass)
-    .on('error', plug.rubySass.logError)
-    .pipe(plug.autoprefixer())
-    .pipe(plug.header(banner, {
+  return $.rubySass(paths.sass)
+    .on('error', $.rubySass.logError)
+    .pipe($.autoprefixer())
+    .pipe($.header(banner, {
       pkg: pkg
     }))
     .pipe(gulp.dest('./src/css'))
-    .pipe(plug.livereload())
-    .pipe(plug.bytediff.start())
-    .pipe(plug.minifyCss({}))
-    .pipe(plug.bytediff.stop(bytediffFormatter))
-    .pipe(plug.rename(pkg.name + '-' + pkg.version + '.min.css'))
-    .pipe(gulp.dest(paths.build));
+    .pipe($.bytediff.start())
+    .pipe($.minifyCss({}))
+    .pipe($.bytediff.stop(bytediffFormatter))
+    .pipe($.rename(pkg.name + '-' + pkg.version + '.min.css'))
+    .pipe(gulp.dest('./.tmp/css'));
 });
-
-/**
- * creating image sprites and the corresponding stylesheets
- */
-gulp.task('sprites', function () {
-  return sprity.src({
-    src: './src/img/icon/*.png',
-    style: './src/sass/_sprite.scss',
-    processor: 'sass'
-  })
-  .pipe(gulp.dest('./build/img'));
-});
-
-/**
- * use Postcss plugin
- */
-gulp.task('styles', function () {
-  return gulp.src('./src/css/main.css')
-    .pipe(plug.postcss([]))
-    .pipe(gulp.dest('./build/css'));
-});
-
-/**
- * start a server
- */
-gulp.task('browser-sync', function () {
-  var files = ['./src/**/*.*'];
-
-  browserSync.init(files, {
-    server: {
-      baseDir: './src'
-    }
-  })
-})
 
 /**
  * Validate .scss files with scss-lint
@@ -138,8 +83,153 @@ gulp.task('browser-sync', function () {
  */
 gulp.task('scss-lint', function() {
   return gulp.src('./src/sass/**/*.scss')
-    .pipe(plug.cached('scsslint'))
-    .pipe(plug.scssLint());
+    .pipe($.cached('scsslint'))
+    .pipe($.scssLint());
+});
+
+gulp.task('js', function() {
+  log('Bundling, minifying, and copying the app\'s JS');
+
+  return gulp.src('./src/**/*.js')
+    .pipe($.header(banner, {
+      pkg: pkg
+    }))
+    .pipe($.bytediff.start())
+    .pipe($.uglify({}))
+    .pipe($.concat('all.js'))
+    .pipe($.bytediff.stop(bytediffFormatter))
+    .pipe($.rename(pkg.name + '-' + pkg.version + '.min.js'))
+    .pipe(gulp.dest('./.tmp/js'));
+});
+
+/**
+ * creating image sprites and the corresponding stylesheets
+ */
+gulp.task('sprites', function() {
+  return sprity.src({
+      src: './src/img/icon/*.png',
+      style: './src/sass/_sprite.scss',
+      processor: 'sass'
+    })
+    .pipe($.if('*.png', gulp.dest('./build/images'), gulp.dest('./src/sass/')));
+});
+
+/**
+ * use Postcss plugin
+ */
+gulp.task('styles', function() {
+  return gulp.src('./src/css/main.css')
+    .pipe($.postcss([]))
+    .pipe(gulp.dest('./build/css'));
+});
+
+/**
+ * start a server
+ */
+gulp.task('browser-sync', function() {
+  var files = ['./src/**/*.*'];
+
+  browserSync.init(files, {
+    server: {
+      baseDir: './src'
+    }
+  })
+});
+
+gulp.task('serve', function() {
+  var files = ['./src/**/*.*'];
+
+  browserSync.init(files, {
+    server: {
+      baseDir: './src'
+    }
+  })
+});
+
+/**
+ * Build the Application
+ */
+gulp.task('build', ['html'], function() {
+  gulp.src('./build/**/*')
+    .pipe($.size({
+      title: 'build',
+      gzip: true
+    }));
+
+  var files = ['./build/**/*.*'];
+
+  browserSync.init(files, {
+    server: {
+      baseDir: './build'
+    }
+  });
+});
+
+gulp.task('html', ['rev'], function() {
+  var rev = require('./build/rev-manifest.json'),
+    cssUrl = rev['css/' + pkg.name + '-' + pkg.version + '.min.css'],
+    jsUrl = rev['js/' + pkg.name + '-' + pkg.version + '.min.js']
+
+  return gulp.src('./src/index.html')
+    .pipe($.htmlReplace({
+      'css': cssUrl,
+      'js': jsUrl
+    }))
+    .pipe($.minifyHtml({
+      conditionals: true,
+      spare: true
+    }))
+    .pipe(gulp.dest('./build'));
+});
+
+/**
+ * Renames files for browser caching purposes
+ */
+gulp.task('rev', ['clean:static', 'rev:manifest', 'rev:css', 'rev:js'], function() {
+  console.log('rev task running!');
+});
+
+gulp.task('clean:static', function(cb) {
+  var delPaths = ['build/css/*', 'build/js/*'];
+  del(delPaths, cb);
+})
+
+/**
+ * rev js
+ */
+gulp.task('rev:js', ['js'], function() {
+  return gulp.src(['./.tmp/js/*.js'])
+    .pipe($.rev())
+    .pipe(gulp.dest('./build/js'));
+});
+
+/**
+ * rev js
+ */
+gulp.task('rev:css', ['css'], function() {
+  return gulp.src('./.tmp/css/*.css')
+    .pipe($.rev())
+    .pipe(gulp.dest('./build/css'));
+});
+
+/**
+ * rev manifest.json
+ */
+gulp.task('rev:manifest', ['js', 'css'], function() {
+  return gulp.src(['./.tmp/**/*', '!./.tmp/**/*.html'])
+    .pipe($.rev())
+    .pipe($.rev.manifest())
+    .pipe(gulp.dest('./build'));
+});
+
+/**
+ * Validate .scss files with scss-lint
+ * @return {Stream}
+ */
+gulp.task('scss-lint', function() {
+  return gulp.src('./src/sass/**/*.scss')
+    .pipe($.cached('scsslint'))
+    .pipe($.scssLint());
 });
 
 /**
@@ -155,19 +245,19 @@ gulp.task('watch', function() {
 gulp.task('git', function() {
   var message = argv.m,
     branch = argv.branch || 'master';
-  execute('git add -A', function (add) {
-    log('execute: ' + plug.util.colors.blue(add));
-    execute('git commit -m "' + message + '"', function (commit) {
-      log('execute: ' + plug.util.colors.blue(commit));
-      execute('git push origin ' + branch, function (branch) {
-        log('execute: ' + plug.util.colors.blue(branch));
+  execute('git add -A', function(add) {
+    log('execute: ' + $.util.colors.blue(add));
+    execute('git commit -m "' + message + '"', function(commit) {
+      log('execute: ' + $.util.colors.blue(commit));
+      execute('git push origin ' + branch, function(branch) {
+        log('execute: ' + $.util.colors.blue(branch));
       })
     })
   });
 
   function execute(command, callback) {
-    log('Command is ' + plug.util.colors.red(command));
-    exec(command, function (err, stdout, stderr) {
+    log('Command is ' + $.util.colors.red(command));
+    exec(command, function(err, stdout, stderr) {
       if (err) {
         throw err;
       }
@@ -193,10 +283,11 @@ gulp.task('default', ['js', 'css'], function() {
  * @return {Stream}
  */
 gulp.task('clean', function(cb) {
-  log('Cleaning: ' + plug.util.colors.blue(paths.report));
-  log('Cleaning: ' + plug.util.colors.blue(paths.build));
+  log('Cleaning: ' + $.util.colors.blue(paths.report));
+  log('Cleaning: ' + $.util.colors.blue(paths.build));
+  log('Cleaning: ' + $.util.colors.blue(paths.tmp));
 
-  var delPaths = [paths.build, paths.report];
+  var delPaths = [paths.build, paths.report, paths.tmp];
   del(delPaths, cb);
 });
 
@@ -223,8 +314,8 @@ function analyzejshint(sources, overrideRcFile) {
   log('Running JSHint');
   return gulp
     .src(sources)
-    .pipe(plug.jshint(jshintrcFile))
-    .pipe(plug.jshint.reporter('jshint-stylish'));
+    .pipe($.jshint(jshintrcFile))
+    .pipe($.jshint.reporter('jshint-stylish'));
 }
 
 /**
@@ -236,7 +327,7 @@ function analyzejscs(sources) {
   log('Running JSCS');
   return gulp
     .src(sources)
-    .pipe(plug.jscs('./.jscsrc'));
+    .pipe($.jscs('./.jscsrc'));
 }
 
 /**
