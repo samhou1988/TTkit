@@ -29,3 +29,8 @@ Now you can develop your app...
 
     -h, --help                   output usage information
     -V, --version                output the version number
+```
+
+## Changelog
+1. change build task
+2. generate js coveraga report

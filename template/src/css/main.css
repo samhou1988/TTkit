@@ -1,9 +1,9 @@
 /**
- * ukiyoe - "Earth era 2015 Ukiyoe" is one of this year's year-end news planning, mobile terminal H5. 2015 by NASA found "another planet", so this is inspired by "another perspective" to re-examine in 2015 occurred in China news events and social phenomena to be presented in a ukiyoe picture.
+ * TTkit - CI Task Tools
  * @version v1.0.0
- * @author samhou <samhou@tencent.com>
- * @date 2015/12/11 18:29:55
- * @link http://news.qq.com/
+ * @author samhou1988 <samhou1988@gmail.com>
+ * @date 2015/12/23 8:12:49
+ * @link http://samhou1988.github.io/
  * @license ISC
  */
 html {
@@ -266,3 +266,14 @@ th {
 .bounceIn {
   -webkit-animation-name: bounceIn;
           animation-name: bounceIn; }
+
+.icon {
+  background-image: url(../images/sprite.png); }
+
+.icon-medal {
+  background-position: 0px 0px;
+  background-repeat: no-repeat;
+  overflow: hidden;
+  display: inline-block;
+  width: 127px;
+  height: 67px; }

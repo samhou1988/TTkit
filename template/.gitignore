@@ -3,6 +3,7 @@ bower_components
 .sass-cache
 build
 test
+spec
 coverage
 report
 src/.sass-cache

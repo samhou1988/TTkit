@@ -17,7 +17,8 @@ var paths = {
   sass: './src/sass/**/*.scss',
   report: './report',
   build: './build',
-  tmp: './.tmp'
+  tmp: './.tmp',
+  coverage: './coverage'
 };
 
 var colors = $.util.colors;
@@ -107,11 +108,12 @@ gulp.task('js', function() {
  */
 gulp.task('sprites', function() {
   return sprity.src({
-      src: './src/img/icon/*.png',
+      src: './src/images/icon/*.png',
       style: './src/sass/_sprite.scss',
       processor: 'sass'
     })
-    .pipe($.if('*.png', gulp.dest('./build/images'), gulp.dest('./src/sass/')));
+    .pipe($.if('*.png', gulp.dest('./build/images')))
+    .pipe($.if('*.png', gulp.dest('./src/images'), gulp.dest('./src/sass/')));
 });
 
 /**
@@ -286,8 +288,9 @@ gulp.task('clean', function(cb) {
   log('Cleaning: ' + $.util.colors.blue(paths.report));
   log('Cleaning: ' + $.util.colors.blue(paths.build));
   log('Cleaning: ' + $.util.colors.blue(paths.tmp));
+  log('Cleaning: ' + $.util.colors.blue(paths.coverage));
 
-  var delPaths = [paths.build, paths.report, paths.tmp];
+  var delPaths = [paths.build, paths.report, paths.tmp, paths.coverage];
   del(delPaths, cb);
 });
 
@@ -348,6 +351,14 @@ function startPlatoVisualizer() {
   function platoCompleted(report) {
     var overview = plato.getOverviewReport(report);
     log(overview.summary);
+
+    var files = ['./report/**/*.*'];
+
+    browserSync.init(files, {
+      server: {
+        baseDir: './report/plato/'
+      }
+    });
   }
 }
 
